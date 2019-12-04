@@ -238,7 +238,7 @@ def get_domains():
     if options.input_file:
         with open('domains.txt','r') as f:
             rows = f.readlines()
-        rows = [row.strip() for row in rows if row != '\n']
+        rows = [row.strip() for row in rows if (row != '\n') and (row!= '\r\n')]
         return rows
     else:
         return [args[0]]
