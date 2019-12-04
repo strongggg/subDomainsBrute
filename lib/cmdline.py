@@ -17,9 +17,11 @@ def parse_args():
                       help='Num of scan Process, 6 by default')
     parser.add_option('-o', '--output', dest='output', default=None,
                       type='string', help='Output file name. default is {target}.txt')
+    parser.add_option('-d', '--inputfile',dest='input_file',default=False,action='store_true',
+                      help='Input file with domains')
 
     (options, args) = parser.parse_args()
-    if len(args) < 1:
+    if (not options.input_file) and len(args) < 1:
         parser.print_help()
         sys.exit(0)
     return options, args

@@ -203,10 +203,11 @@ def wildcard_test(domain, level=1):
         answers = r.query('lijiejie-not-existed-test.%s' % domain)
         ips = ', '.join(sorted([answer.address for answer in answers]))
         if level == 1:
-            print 'any-sub.%s\t%s' % (domain.ljust(30), ips)
+            print '\n\nany-sub.%s\t%s' % (domain.ljust(30), ips)
             wildcard_test('any-sub.%s' % domain, 2)
         elif level == 2:
-            exit(0)
+            #exit(0)
+            pass
     except Exception as e:
         return domain
 
@@ -233,15 +234,27 @@ def txt_to_html(domain):
     domain = domain + '<br>'
     return domain
 
+def get_domains():
+    if options.input_file:
+        with open('domains.txt','r') as f:
+            rows = f.readlines()
+        rows = [row.strip() for row in rows if row != '\n']
+        return rows
+    else:
+        return [args[0]]
+
 
 
 if __name__ == '__main__':
     options, args = parse_args()
-    print '''  SubDomainsBrute v1.2
+    print '''  SubDomainsBrute v2.0
   https://github.com/lijiejie/subDomainsBrute
 '''
     # make tmp dirs
-    tmp_dir = 'tmp/%s_%s' % (args[0], int(time.time()))
+    #tmp_dir = 'tmp/%s_%s' % (args[0], int(time.time()))
+    #time.strftime('%Y-%m-%d %H%:%M',time.localtime(time.time()))
+    tmp_dir = 'tmp/_%s' % (int(time.time()))
+
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
 
@@ -254,34 +267,44 @@ if __name__ == '__main__':
 
     try:
         print '[+] Run wildcard test'
-        domain = wildcard_test(args[0])
-        options.file = get_sub_file_path()
-        print '[+] Start %s scan process' % options.process
-        print '[+] Please wait while scanning ... \n'
-        start_time = time.time()
-        all_process = []
-        for process_num in range(options.process):
-            p = multiprocessing.Process(target=run_process,
-                                        args=(domain, options, process_num, dns_servers, next_subs,
-                                              scan_count, found_count, queue_size_array, tmp_dir)
-                                        )
-            all_process.append(p)
-            p.start()
 
-        char_set = ['\\', '|', '/', '-']
-        count = 0
-        while all_process:
-            for p in all_process:
-                if not p.is_alive():
-                    all_process.remove(p)
-            groups_count = 0
-            for c in queue_size_array:
-                groups_count += c
-            msg = '[%s] %s found, %s scanned in %.1f seconds, %s groups left' % (
-                char_set[count % 4], found_count.value, scan_count.value, time.time() - start_time, groups_count)
-            print_msg(msg)
-            count += 1
-            time.sleep(0.3)
+        domains = get_domains()
+
+        for domain in domains:
+            domain = wildcard_test(domain)
+            if domain == None:
+                continue
+            
+            #domain = wildcard_test(args[0])
+            
+            options.file = get_sub_file_path()
+            print '\n\n[+] ||%s|| is scanning ...' % domain
+            print '[+] Start %s scan process' % options.process
+            print '[+] Please wait while scanning ... \n'
+            start_time = time.time()
+            all_process = []
+            for process_num in range(options.process):
+                p = multiprocessing.Process(target=run_process,
+                                            args=(domain, options, process_num, dns_servers, next_subs,
+                                                  scan_count, found_count, queue_size_array, tmp_dir)
+                                            )
+                all_process.append(p)
+                p.start()
+
+            char_set = ['\\', '|', '/', '-']
+            count = 0
+            while all_process:
+                for p in all_process:
+                    if not p.is_alive():
+                        all_process.remove(p)
+                groups_count = 0
+                for c in queue_size_array:
+                    groups_count += c
+                msg = '[%s] %s found, %s scanned in %.1f seconds, %s groups left' % (
+                    char_set[count % 4], found_count.value, scan_count.value, time.time() - start_time, groups_count)
+                print_msg(msg)
+                count += 1
+                time.sleep(0.3)
     except KeyboardInterrupt as e:
         print '[ERROR] User aborted the scan!'
         for p in all_process:
@@ -289,10 +312,11 @@ if __name__ == '__main__':
     except Exception as e:
         print '[ERROR] %s' % str(e)
 
-    out_file_name = get_out_file_name(domain, options)
+    #out_file_name = get_out_file_name(domain, options) 
+    out_file_name = '_' + str(int(time.time())) + '.html'
     all_domains = set()
     domain_count = 0
-    with open(out_file_name, 'w') as f:
+    with open('result/' + out_file_name, 'w') as f:
         for _file in glob.glob(tmp_dir + '/*.txt'):
             with open(_file, 'r') as tmp_f:
                 for domain in tmp_f:

@@ -1,4 +1,4 @@
-# subDomainsBrute 1.3 #
+# subDomainsBrute 2.0 #
 
 A fast sub domain brute tool for pentesters.
 
@@ -8,7 +8,8 @@ You can get older versions via [https://github.com/lijiejie/subDomainsBrute/rele
 
 
 ## Change Log 
-
+* [2019-12-04] v2.0
+  * 增加文件输入，可批量查询
 * [2019-11-27] v1.3
   * txt文件输出改成了html文件输出
 * [2019-05-19] 
@@ -24,6 +25,7 @@ You can get older versions via [https://github.com/lijiejie/subDomainsBrute/rele
 
 
 ## Dependencies ##
+> python2
 > pip install dnspython gevent
 
 
@@ -44,6 +46,15 @@ You can get older versions via [https://github.com/lijiejie/subDomainsBrute/rele
 	                        Num of scan Process, 6 by default
 	  -o OUTPUT, --output=OUTPUT
 	                        Output file name. default is {target}.txt
+	  -d INPUTFILE, --inputfile=INPUTFILE
+                        	Input file with domains                
+
+## Example ##
+	批量查询:	
+	python2 subDomainsBrute.py -d
+	单个查询:
+	python2 subDomainsBrute.py <domain>
+
 
 
 ## Screenshot ##
