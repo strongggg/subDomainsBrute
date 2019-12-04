@@ -25,8 +25,8 @@ You can get older versions via [https://github.com/lijiejie/subDomainsBrute/rele
 
 
 ## Dependencies ##
-> python2
-> pip install dnspython gevent
+* python2
+* pip install dnspython gevent
 
 
 ## Usage ##
