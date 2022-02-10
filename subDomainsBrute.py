@@ -243,9 +243,12 @@ def get_domains():
     else:
         return [args[0]]
 
-
+def init():
+    if not os.path.exists("result"):
+        os.mkdir("result")
 
 if __name__ == '__main__':
+    init()
     options, args = parse_args()
     print '''  SubDomainsBrute v2.0
   https://github.com/lijiejie/subDomainsBrute
@@ -312,8 +315,11 @@ if __name__ == '__main__':
     except Exception as e:
         print '[ERROR] %s' % str(e)
 
-    #out_file_name = get_out_file_name(domain, options) 
-    out_file_name = '_' + str(int(time.time())) + '.html'
+    if len(domains) > 1:
+        out_file_name = '_' + str(int(time.time())) + '.html'
+    else:
+        out_file_name = get_out_file_name(domain, options) 
+    #
     all_domains = set()
     domain_count = 0
     with open('result/' + out_file_name, 'w') as f:
